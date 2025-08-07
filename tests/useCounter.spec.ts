@@ -1,32 +1,35 @@
 import { renderHook, act } from '@testing-library/react';
 import useCounter from '../src/hooks/features/homepage/useCounter';
 
-describe('useCounter', () => {
-  it('should initialize count to 0 and val to 1', () => {
+describe('useCounter hook behavior', () => {
+  let hook: ReturnType<typeof renderHook<typeof useCounter>>['result'];
+
+  beforeEach(() => {
     const { result } = renderHook(() => useCounter());
-    expect(result.current.count).toBe(0);
-    expect(result.current.val).toBe(1);
+    hook = result;
   });
 
-  it('should increment count by val', () => {
-    const { result } = renderHook(() => useCounter());
-    act(() => {
-      result.current.increment();
-    });
-    expect(result.current.count).toBe(1);
+  it('starts with count = 0 and val = 1', () => {
+    expect(hook.current.count).toBe(0);
+    expect(hook.current.val).toBe(1);
   });
 
-  it('should update val and increment by new val', () => {
-    const { result } = renderHook(() => useCounter());
-
+  it('increments count by 1 by default', () => {
     act(() => {
-      result.current.setVal(5);
+      hook.current.increment();
+    });
+    expect(hook.current.count).toBe(1);
+  });
+
+  it('respects updated increment value', () => {
+    act(() => {
+      hook.current.setVal(4);
     });
 
     act(() => {
-      result.current.increment();
+      hook.current.increment();
     });
 
-    expect(result.current.count).toBe(5);
+    expect(hook.current.count).toBe(4);
   });
 });
